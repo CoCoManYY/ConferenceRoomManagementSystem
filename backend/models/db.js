@@ -1,38 +1,21 @@
 // var mysql = require('mysql');
 // var connection = mysql.createConnection({
-//   host: '127.0.0.1',	// 连接的服务器
+//   host: 'localhost',	// 连接的服务器
 //   port: 3306,
 // 	user: 'root',	// 用户名
-// 	password: '12345678',	// 用户密码
+// 	password: '123456',	// 用户密码
 // 	database: 'meetingRoomManagement'	// 选择的库
 // });
 
-// connection.connect();	// 创建一个mysql的线程
+// module.exports = connection;
 
-// connection.query('SELECT 1 + 1 AS solution', (err, results, fields) => {
-// 	if (err) {
-// 		throw  err;
-// 	};
-
-//   console.log('The solution is:', results[0].solution);	// 返回第一条记录的solution列的内容
-// });
-
-
-var Sequelize =  require('sequelize');
-const caching_sha2_password = require('mysql2/lib/auth_plugins/caching_sha2_password.js');
-const mysql_native_password = require('mysql2/lib/auth_plugins/mysql_native_password.js');
-// database数据库名称   name 用户  password密码
-var sequelize = new Sequelize('database', 'name', 'password', {
-		dialect: 'mysql',
-		dialectOptions:{
-			authPlugins: { 
-				sha256_password: mysql_native_password({})
-		}
-		},
-		host: '127.0.0.1',	// 连接的服务器
-		port: 3306,
-		user: 'root',	// 用户名
-		password: '12345678',	// 用户密码
-		database: 'meetingRoomManagement',	// 选择的库
+var Sequelize = require('sequelize');
+module.exports = new Sequelize('meetingRoomManagement', 'root', '123456', {
+    host: 'localhost', // 数据库地址
+    dialect: 'mysql', // 指定连接的数据库类型
+    pool: {
+        max: 5, // 连接池中最大连接数量
+        min: 0, // 连接池中最小连接数量
+        idle: 10000 // 如果一个线程 10 秒钟内没有被使用过的话，那么就释放线程
+    }
 });
-module.exports=sequelize

@@ -28,7 +28,7 @@ export default class HeaderCustom extends Component{
         history.push('/app/personalInformation');
     }
     logout(){
-        localStorage.removeItem("employee");
+        localStorage.removeItem("token");
         history.push('/login');
     }
     render(){

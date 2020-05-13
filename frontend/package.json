@@ -7,6 +7,10 @@
       "target": "http://58.87.120.47:8001/",
       "changeOrigin": true
     },
+    "/yuyu/*": {
+      "target": "http://localhost:9000/",
+      "changeOrigin": true
+    },
     "/s6/*": {
       "target": "https://free-api.heweather.com/",
       "changeOrigin": true
@@ -16,7 +20,7 @@
     "@tinymce/tinymce-react": "^2.2.5",
     "antd": "^3.5.4",
     "autoprefixer": "7.1.2",
-    "axios": "^0.17.1",
+    "axios": "^0.19.2",
     "babel-core": "6.25.0",
     "babel-eslint": "7.2.3",
     "babel-jest": "20.0.3",

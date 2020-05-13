@@ -1,8 +1,0 @@
-CREATE TABLE user (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  username VARCHAR(50) NOT NULL,
-  password VARCHAR(50) NOT NULL,
-  gender VARCHAR(5) NOT NULL,
-  id_card VARCHAR(50) NOT NULL,
-  usertype VARCHAR(50) NOT NULL
-);

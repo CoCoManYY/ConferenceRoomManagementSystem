@@ -18,16 +18,14 @@ class NormalLoginForm extends Component {
 
                 //请求URL
                 // const apiUrl = `/scb_sms-0.0.1-SNAPSHOT/sm/account/accountLogin`;
-                const apiUrl = `sm/account/login`;
+                const apiUrl = `http://localhost:9000/user/login`;
 
                 //设置请求方式，请求头和请求内容
                 var opts = {
                     // credentials: "include",
                     method: "POST",
                     body: JSON.stringify(values),
-                    // body: JSON.stringify(data),
                     headers: {
-                        'Accept': 'application/json',
                         'Content-Type': 'application/json',
                     }
                 }
@@ -42,6 +40,7 @@ class NormalLoginForm extends Component {
                     response.json().then((responseJson) => {
                         //对JSON的解析
                         if (responseJson.code === 200) {
+                            console.log('responseJson',responseJson);
                             if (responseJson.data !== "" || responseJson.data !== null) {
                                 message.success('login success!'); //成功信息
                                 this.setState({
@@ -49,7 +48,8 @@ class NormalLoginForm extends Component {
                                 });
                                     let responseDate = responseJson.data;
                                     // console.log(responseDate.employeeId);
-                                    localStorage.setItem('employee',JSON.stringify(responseDate));
+                                    localStorage.setItem('token',responseDate.token);
+                                    localStorage.setItem('userInfo',JSON.stringify(responseDate));
                                     // console.log(responseDate);
                                     let that = this;
                                     setTimeout(function () { //延迟进入
@@ -86,7 +86,7 @@ class NormalLoginForm extends Component {
                         </div>
                         <Form onSubmit={this.handleSubmit} style={{maxWidth: '300px'}}>
                             <FormItem>
-                                {getFieldDecorator('accountName', {
+                                {getFieldDecorator('userName', {
                                     rules: [{required: true, message: 'Please input userName!'}],
                                 })(
                                     <Input prefix={<Icon type="user" style={{fontSize: 13}}/>}
@@ -94,7 +94,7 @@ class NormalLoginForm extends Component {
                                 )}
                             </FormItem>
                             <FormItem>
-                                {getFieldDecorator('accountPassword', {
+                                {getFieldDecorator('password', {
                                     rules: [{required: true, message: 'Please input password!'}],
                                 })(
                                     <Input prefix={<Icon type="lock" style={{fontSize: 13}}/>} type="password"

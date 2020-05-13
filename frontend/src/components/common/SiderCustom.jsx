@@ -87,12 +87,12 @@ export default class SiderCustom extends Component{
     };
     render(){
         const { collapsed, firstHide, openKey, selectedKey } = this.state;
-        var data = JSON.parse(localStorage.getItem("employee"));
-        let responsecolumn = JSON.stringify(data.menuTree);
-        let columnMenus = JSON.parse(responsecolumn);
-        let html=columnMenus.map((obj,i)=> {
-            return this.formSubmenusChild(obj);
-        });
+        // var data = JSON.parse(localStorage.getItem("employee"));
+        // let responsecolumn = JSON.stringify(data.menuTree);
+        // let columnMenus = JSON.parse(responsecolumn);
+        // let html=columnMenus.map((obj,i)=> {
+        //     return this.formSubmenusChild(obj);
+        // });
 
 
         return(
@@ -100,7 +100,7 @@ export default class SiderCustom extends Component{
                 trigger={null}
                 collapsed={collapsed}
             >
-                <div className="logo" style={collapsed?{backgroundSize:'70%'}:{backgroundSize:'30%'}}/>
+                {/* <div className="logo" style={collapsed?{backgroundSize:'70%'}:{backgroundSize:'30%'}}/> */}
                 <Menu
                     theme="dark"
                     mode="inline"
@@ -116,9 +116,9 @@ export default class SiderCustom extends Component{
                     {/*{html}*/}
 
                      <Menu.Item key={"/app"}>
-                        <Link to={"/app"}><Icon type="home" /><span>INDEX</span></Link>
+                        <Link to={"/app"}><Icon type="home" /><span>会议室列表</span></Link>
                     </Menu.Item>
-                    {html}
+                    {/* {html} */}
 
                     {/*<SubMenu key="sub1" title={<span><Icon type="edit" /><span>系统管理</span></span>}>*/}
                         {/*<Menu.Item key={"/app/account"}>*/}

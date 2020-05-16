@@ -49,18 +49,20 @@ export default class my extends Component {
                    console.log('getDetail',responseJson.data);
                     const calenderListData = {};
                    (responseJson.data.conferenceRoomReserveLogs||[]).forEach(log=>{
-                        const startTime = new Date(log.startTime);
-                        const endTime  = new Date(log.endTime);
-                        const month = startTime.getMonth();
-                        const day = startTime.getDate();
-                        const content = `${startTime.toLocaleTimeString()}-${endTime.toLocaleTimeString()} 已预定`;
-                        if( ! calenderListData[month]){
-                            calenderListData[month]= {};
-                        }
-                        if( ! calenderListData[month][day]){
-                            calenderListData[month][day] = [];
-                        }
-                        calenderListData[month][day].push({ type: 'success',content});
+                        if(log.status != '1'){
+                            const startTime = new Date(log.startTime);
+                            const endTime  = new Date(log.endTime);
+                            const month = startTime.getMonth();
+                            const day = startTime.getDate();
+                            const content = `${startTime.toLocaleTimeString()}-${endTime.toLocaleTimeString()} 已预定`;
+                            if( ! calenderListData[month]){
+                                calenderListData[month]= {};
+                            }
+                            if( ! calenderListData[month][day]){
+                                calenderListData[month][day] = [];
+                            }
+                            calenderListData[month][day].push({ type: 'success',content});
+                        } 
                    });
                    this.setState({calenderListData});
                 }
@@ -94,22 +96,6 @@ export default class my extends Component {
                 })
             }
         })
-        // if (month === b) {
-        //     switch (day) {
-        //         case a:
-        //             listData = [
-        //                 { type: 'success', content: '14:00:00-14:30:00  新加坡 交付流程讨论'  },
-        //                 { type: 'success', content: '10:00:00-11:00:00  新加坡 测试会议'  },
-        //             ]; break;
-
-        //         case c:
-        //             listData = [
-        //                 { type: 'success', content: '09:00:00-10:30:00  新加坡 交付流程讨论'  },
-        //                 { type: 'success', content: '10:00:00-11:00:00  新加坡 测试会议'  },
-        //             ]; break;
-        //         default:
-        //     }
-        // }
         return listData || [];
     }
 

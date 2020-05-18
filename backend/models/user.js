@@ -16,6 +16,10 @@ const User = db.define("user", {
 		type: Sequelize.STRING(50),
 		allowNull: false,
 	},
+	email: {
+		type: Sequelize.STRING(50),
+		allowNull: false,
+	},
   gender:{
     type: Sequelize.STRING(5),
 		allowNull: false,

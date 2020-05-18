@@ -8,8 +8,8 @@ const PunchingCardLogs = db.define("punchingCardLogs", {
 		primaryKey: true,
 		autoIncrement: true,
 	},
-	userId: {
-		type: Sequelize.STRING(50),
+	conferenceRoomReserveLogsId: {
+		type: Sequelize.INTEGER(11),
 		allowNull: false,
 	},
 	conferenceRoomId: {

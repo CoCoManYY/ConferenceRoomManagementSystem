@@ -5,17 +5,9 @@ var checkToken = require('./util').checkToken;
 var setToken = require('./util').setToken;
 module.exports = {
     login: function(req, res, next) {
-        console.log('params',req.body);
-        console.log('testtest');
-        var username = req.body.userName;  //统一接收前端的电话号，用户名，或者其他（多方式登录）
+        var username = req.body.userName; 
         var password = req.body.password;
-        //检查token
         var token = setToken({userName:username,password});
-        // if(Object.keys(tokenObj||{}).length>0){
-        //     username = tokenObj.userName;
-        //     password = tokenObj.password;
-        // }
-        console.log('testestes');
         userModel.findByNameAndPassword(username,password).then(data=>{
             if(data){
                 res.json({success:true,data:{token,userName:username},code:200,msg:null});
@@ -25,9 +17,7 @@ module.exports = {
         });
     },
     register: function(req, res, next) {
-        console.log('params',req.body);
-        console.log('testtest');
-        var username = req.body.userName;  //统一接收前端的电话号，用户名，或者其他（多方式登录）
+        var username = req.body.userName; 
         var password = req.body.password;
         var gender = req.body.gender;
         var idCard = req.body.idCard;

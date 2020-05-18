@@ -12,7 +12,7 @@ const Conferees = db.define("conferees", {
 		type: Sequelize.STRING(50),
 		allowNull: false,
 	},
-	conferenceRoomId: {
+	conferenceRoomReserveLogsId: {
 		type: Sequelize.INTEGER(11),
 		allowNull: false,
 	},

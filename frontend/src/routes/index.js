@@ -5,6 +5,7 @@ import history from '../components/common/history';
 import App from '../components/common/App';
 // import login from '../components/common/login';
 import Login from '../components/login/Login';
+import Register from '../components/register';
 import Home from '../components/common/Home';
 import NoMatch from '../components/common/404';
 
@@ -17,6 +18,7 @@ class MRoute extends Component {
           <Route exact path="/" component={Home}/>
           <Route path="/app" component={App}/>
           <Route path="/login" component={Login}/>
+          <Route path="/register" component={Register}/>
           <Route component={NoMatch}/>
         </Switch>
       </Router>

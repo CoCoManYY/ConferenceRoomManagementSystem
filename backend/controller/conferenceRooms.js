@@ -9,8 +9,6 @@ const Op = Sequelize.Op;
 
 module.exports = {
     getConferenceRoomDetail: function(req, res, next) {
-        console.log('params', req.query);
-        // console.log('testtest');
         const conferenceRoomId =  req.query.conferenceRoomId;
         ConferenceRoom.findOne({    
             where: {
@@ -32,8 +30,6 @@ module.exports = {
         });
     },
     getAllConferenceRoomInfo: function(req, res, next) {
-        console.log('params',req.body);
-        console.log('testtest');
         ConferenceRoom.findAll({
             include:[{
                 model:ConferenceRoomReserveLog,

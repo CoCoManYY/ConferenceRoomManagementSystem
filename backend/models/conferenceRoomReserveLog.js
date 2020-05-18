@@ -8,6 +8,10 @@ const ConferenceRoomReserveLog = db.define("conferenceRoomReserveLog", {
 		primaryKey: true,
 		autoIncrement: true,
 	},
+	userId:{
+		type: Sequelize.INTEGER(11),
+		allowNull: false,
+	},
 	conferenceRoomId: {
 		type: Sequelize.INTEGER(11),
 		allowNull: false,

@@ -40,16 +40,25 @@ var user = User.sync({ force: false });
 
 module.exports = {
 	// 添加新用户
-	addUser : function(userName,password, gender,idCard,userType) {		
-        console.log('register',userName,password, gender,idCard,userType);
+	addUser : function(userName,password,email, gender,idCard,userType) {		
+        console.log('register',userName,password, email,gender,idCard,userType);
 		// 向 user 表中插入数据
 		return User.create({
-			username:userName,password, gender,idcard:idCard,usertype:userType
+			username:userName,password, email,gender,idcard:idCard,usertype:userType
 		});
 	},
-	// 通过用户名查找用户
-	findByName : function(userName) {
-		return User.findOne({ where: { username: userName } });
+	// 通过用户id查找用户
+	findByUserId : function(userId) {
+		return User.findOne({ where: { id: userId },attributes: { exclude: ['password'] } });
+	},
+
+	// 通过用户id查找用户
+	findPasswordByUserId : function(userId) {
+		return User.findOne({ where: { id: userId },attributes: ['password'] });
+	},
+	// 更新密码
+	updatePassword: function (userId, password) {
+		return User.update({password}, {where:{ id: userId}});
 	},
 	// 通过用户名和木马查找用户
 	findByNameAndPassword : function(userName,password) {

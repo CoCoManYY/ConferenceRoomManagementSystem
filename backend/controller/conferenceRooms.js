@@ -70,6 +70,28 @@ module.exports = {
             console.log('err'+ err);
         });
     },
+    getConferenceRoomsInfo: function(req, res, next) {
+        console.log('params',req.body);
+        var pageIndex = parseInt(req.query.pageIndex);
+        var pageSize = parseInt(req.query.pageSize);
+        ConferenceRoom.findAndCountAll({
+            offset: pageSize*pageIndex, 
+            limit: pageSize,
+            // include:[{
+            //     model:ConferenceRoomReserveLog,
+            //     required:false 
+            // }]
+        }).then((data)=>{
+            if(Object.keys(data||{}).length!==0){
+                res.json({success:true,data,code:200,msg:null});
+            }else{
+                res.json({success:false,data,code:500,msg:"未查到数据"});
+            } 
+    
+        },(err)=>{
+            console.log('err'+ err);
+        });
+    },
     addConferenceRoomReserveLog: function(req, res, next) {
         console.log('params',req.body);
         var startTime=req.body.startTime;

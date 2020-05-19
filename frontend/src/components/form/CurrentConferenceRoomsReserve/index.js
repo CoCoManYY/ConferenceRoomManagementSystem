@@ -1,6 +1,8 @@
 import { Timeline, message,Drawer,Form,Input,Select,Button, TimePicker  } from 'antd';
 import React, { Component } from 'react';
 import moment from 'moment';
+
+import history from '../../common/history';
 import { getQueryString } from '../../../utils/params';
 import BreadcrumbCustom from "../../common/BreadcrumbCustom";
 import { canReserveStatusMap } from '../../../constant/conferenceRooms';
@@ -60,12 +62,16 @@ export default class my extends Component {
             method: "get",
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': localStorage.getItem('authorizationToken')
             }
         }
         //成功发送请求
         fetch(apiUrl, opts).then((response) => {
             //请求没有正确响应
             if (response.status !== 200) {
+                if(response.status === 401){
+                    history.push('/login');
+                }
                 throw new Error('Fail to get response with status ' + response.status);
             }
             //请求体为JSON

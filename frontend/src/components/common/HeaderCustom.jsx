@@ -25,10 +25,11 @@ export default class HeaderCustom extends Component{
     };
     //查看个人信息详情
     detailsView() {
-        history.push('/app/personalInformation');
+        history.push('/app/personalCenter');
     }
     logout(){
-        localStorage.removeItem("token");
+        localStorage.removeItem("authorizationToken");
+        localStorage.removeItem("userId");
         history.push('/login');
     }
     render(){

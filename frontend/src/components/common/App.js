@@ -11,6 +11,7 @@ import MIndex from '../index/Index';
 import CurrentConferenceRoomsInfo from '../form/CurrentConferenceRoomsInfo';
 import CurrentConferenceRoomsDetail from '../form/CurrentConferenceRoomsDetail';
 import CurrentConferenceRoomsReserve from '../form/CurrentConferenceRoomsReserve';
+import PersonalCenter from '../form/PersonalCenter';
 
 import AForm from '../form/AForm/AForm';
 import DForm from '../form/DForm/DForm';
@@ -43,66 +44,11 @@ export default class App extends Component {
             localStorage.setItem("mms_SiderCollapsed", this.state.collapsed);
         });
     };
-    getCurrentConferenceRoomsInfo = () => {
-        //请求URL
-        // const apiUrl = `/scb_sms-0.0.1-SNAPSHOT/sm/account/accountLogin`;
-        const apiUrl = `http://localhost:9000/conferenceRoom/getCurrentConferenceRoomsInfo`;
-
-        //设置请求方式，请求头和请求内容
-        var opts = {
-            // credentials: "include",
-            method: "get",
-            headers: {
-                'Content-Type': 'application/json',
-            }
-        }
-
-        //成功发送请求
-        fetch(apiUrl, opts).then((response) => {
-            //请求没有正确响应
-            if (response.status !== 200) {
-                throw new Error('Fail to get response with status ' + response.status);
-            }
-            //请求体为JSON
-            response.json().then((responseJson) => {
-                //对JSON的解析
-                if (responseJson.code === 200) {
-                    const conferenceRoomsInfo = [];
-                   console.log('getCurrentConferenceRoomsInfo',responseJson.data);
-                   (responseJson.data||[]).forEach(data=>{
-                        if((data.conferenceRoomReserveLogs||[]).length){
-                            let canReserveStatus = 0;
-                            const recentLog = data.conferenceRoomReserveLogs[data.conferenceRoomReserveLogs.length-1];
-                            if(recentLog.status=='2') canReserveStatus = 2;
-                            else if(recentLog.status=='0') {
-                               if((new Date()).getTime() - (new Date(recentLog.startTime)).getTime()<=15*60*1000){
-                                canReserveStatus=3;
-                               }else{
-                                canReserveStatus=1;
-                               }
-                            }
-                           
-                            conferenceRoomsInfo.push(Object.assign(data,{canReserveStatus}));
-                        }else{
-                            conferenceRoomsInfo.push(Object.assign(data,{canReserveStatus:0}))
-                        }
-                   });
-                   console.log('conferenceRoomsInfos',conferenceRoomsInfo);
-                   this.setState({conferenceRooms:conferenceRoomsInfo});
-                }
-            }).catch((error) => {
-                message.error("获取会议室信息失败");
-            });
-        }).catch((error) => {
-            message.error("获取会议室信息失败");
-        });
-    };
     componentDidMount() {
         //save Sider
         if (localStorage.getItem("mms_SiderCollapsed") === null) {
             localStorage.setItem("mms_SiderCollapsed", false);
         }
-        this.getCurrentConferenceRoomsInfo();
 
         // var data = JSON.stringify(localStorage.getItem("employee"));
         // console.log(JSON.parse(data).menuTree[0]);
@@ -112,7 +58,7 @@ export default class App extends Component {
         const {collapsed} = this.state;
         const {location} = this.props;
         let userName;
-        if (localStorage.getItem("employee") === null) {
+        if (localStorage.getItem("authorizationToken") === null || localStorage.getItem("userId") === null) {
             return <Redirect to="/login"/>
         } else {
             let userInfo = JSON.parse(localStorage.getItem("userInfo")||"{}");
@@ -132,6 +78,7 @@ export default class App extends Component {
                         <Route exact path={'/app'} component={CurrentConferenceRoomsInfo} />
                         <Route exact path={'/app/detail'} component={CurrentConferenceRoomsDetail} />
                         <Route exact path={'/app/detail/reserve'} component={CurrentConferenceRoomsReserve}/>
+                        <Route exact path={'/app/personalCenter'} component={PersonalCenter}/>
                         <Route exact path={'/app/account'} component={AForm} />
                         <Route exact path={'/app/department'} component={DForm} />
                         <Route exact path={'/app/employee'} component={EForm} />

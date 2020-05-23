@@ -1,16 +1,18 @@
 import React, {Component} from 'react';
-import { Card, Row, Col,message, Pagination } from 'antd';
+import { Card, Row, Col,message, Pagination, Input } from 'antd';
 import history from '../../common/history';
 import './index.less';
-
-import {canReserveStatusMap} from '../../../constant/conferenceRooms';
+import { myFetch } from "../../../utils/networks";
+import {canReserveStatusMap} from '../../../constant/allKindsOfMap';
+const { Search } = Input;
 export default class App extends Component {
     constructor(props){
         super(props);
         this. state = {
             current:1,
-            pageSize:9,
+            pageSize:8,
             total:10,
+            keywords:'',
             conferenceRooms:[
                 // {id:'1',houseNumber:'东区-计-603',containNum:'30', hasProjector:1,supportRemote:1,canReserveStatus:0},
                 // {id:'1',houseNumber:'东区-计-603',containNum:'30', hasProjector:1,supportRemote:1,canReserveStatus:1},
@@ -21,56 +23,40 @@ export default class App extends Component {
         };
     }
    
-    getCurrentConferenceRoomsInfo = (page) => {
+    getCurrentConferenceRoomsInfo = (page,keywords) => {
         //请求URL
         // const apiUrl = `/scb_sms-0.0.1-SNAPSHOT/sm/account/accountLogin`;
-        const apiUrl = `http://localhost:9000/conferenceRoom/getConferenceRoomsInfo?pageIndex=${page}&pageSize=${this.state.pageSize}`;
-
-        //设置请求方式，请求头和请求内容
-        var opts = {
-            // credentials: "include",
-            method: "get",
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': localStorage.getItem('authorizationToken')
-            }
-        }
-
-        //成功发送请求
-        fetch(apiUrl, opts).then((response) => {
-            //请求没有正确响应
-            if (response.status !== 200) {
-                if(response.status === 401){
-                    history.push('/login');
-                }
-                throw new Error('Fail to get response with status ' + response.status);
-            }
-            //请求体为JSON
-            response.json().then((responseJson) => {
+        myFetch('http://localhost:9000/conferenceRoom/getConferenceRoomsInfo','get',{
+            pageIndex:page,
+            pageSize:this.state.pageSize,
+            keywords:keywords||this.state.keywords
+        }).then(responseJson=>{
                 //对JSON的解析
                 if (responseJson.code === 200) {
-                   this.setState({conferenceRooms:responseJson.data.rows,total:responseJson.data.count});
-                }
-            }).catch((error) => {
-                message.error("获取会议室信息失败");
-            });
-        }).catch((error) => {
+                    this.setState({conferenceRooms:responseJson.data.rows,total:responseJson.data.count});
+                 }
+        },(error) => {
             message.error("获取会议室信息失败");
-        });
+        })
     };
 
     onPaginationChange = (page)=>{
-        console.log('onPaginationChange',page);
         this.getCurrentConferenceRoomsInfo(page-1);
     }
+    searchHandle=(value)=>{
+        this.setState({keywords:value,current:1});
+        this.getCurrentConferenceRoomsInfo(0,value);
+    }
     componentDidMount() {
-        console.log('tetetetetete');
         this.getCurrentConferenceRoomsInfo(0);
     }
 
     render() {
         return (
             <div>
+                <div style={{padding:'10px'}}>
+                <Search placeholder="搜索会议室" onSearch={this.searchHandle} enterButton />
+                </div>
             <Row gutter={8}>
             {
                 this.state.conferenceRooms.map(room=>( 
@@ -89,7 +75,7 @@ export default class App extends Component {
                 )
             }
             </Row>
-            <div>
+            <div style={{overflow:'hidden'}}>
             <Pagination style={{ width: '300px', float: 'right'}} simple defaultCurrent={this.state.current} pageSize={this.state.pageSize} total={this.state.total} onChange={this.onPaginationChange}/>
             </div>
             

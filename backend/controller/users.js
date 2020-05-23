@@ -4,6 +4,42 @@ var userModel = require('../models/user');
 var checkToken = require('./util').checkToken;
 var setToken = require('./util').setToken;
 module.exports = {
+    findAllUsersWithoutMyself: function(req, res, next) {
+        var userId = req.query.userId; 
+        console.log('userId',userId);
+        userModel.findAllUsersWithoutMyself(0,10,userId).then(data=>{
+            if(data){
+                res.json({success:true,data,code:200,msg:null});
+            }else{
+                res.json({success:false,data:[],code:500,msg:'用户信息获取失败'});
+            }
+        });
+    },
+    searchUserInfo: function (req, res, next) {
+        console.log('params', req.body);
+        var userId = req.query.userId; 
+        var keywords = req.query.keywords || '';
+        userModel.searchUserInfo(0,10,keywords,userId).then((data) => {
+            if (data) {
+                res.json({
+                    success: true,
+                    data,
+                    code: 200,
+                    msg: null
+                });
+            } else {
+                res.json({
+                    success: false,
+                    data,
+                    code: 500,
+                    msg: "未查到数据"
+                });
+            }
+
+        }, (err) => {
+            console.log('err' + err);
+        });
+    },
     login: function(req, res, next) {
         var username = req.body.userName; 
         var password = req.body.password;

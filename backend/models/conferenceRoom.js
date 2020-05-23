@@ -30,17 +30,5 @@ const ConferenceRoom = db.define("conferenceRoom", {
 
 var conferenceRoom = ConferenceRoom.sync({ force: false });
 
-// 查询所有的会议室
-exports.queryAllConferenceRooms = function() {
-	// 向 user 表中插入数据
-	return ConferenceRoom.findAll();
-};
-
-// 通过id查找会议室
-exports.queryConferenceRoomById = function(id) {
-	return User.findOne({ where: { id: id } });
-};
-
-ConferenceRoom.hasMany(ConferenceRoomReserveLog, {foreignKey: 'conferenceRoomId', sourceKey: 'id'});
 exports.ConferenceRoom=ConferenceRoom;
 

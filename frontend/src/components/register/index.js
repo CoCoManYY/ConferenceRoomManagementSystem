@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import "./index.less";
+import { myFetch } from "../../utils/networks";
 import {
   Form,
   Icon,
@@ -85,77 +86,49 @@ class NormalRegisterForm extends Component {
       if (!err) {
         console.log("Received values of form: ", values);
         this.state.msg = values;
-
-        //请求URL
-        // const apiUrl = `/scb_sms-0.0.1-SNAPSHOT/sm/account/accountLogin`;
-        const apiUrl = `http://localhost:9000/user/register`;
-
-        //设置请求方式，请求头和请求内容
-        var opts = {
-          // credentials: "include",
-          method: "POST",
-          body: JSON.stringify(values),
-          headers: {
-            "Content-Type": "application/json"
-          }
-        };
-
-        //成功发送请求
-        fetch(apiUrl, opts)
-          .then(response => {
-            //请求没有正确响应
-            if (response.status !== 200) {
-              throw new Error(
-                "Fail to get response with status " + response.status
-              );
+        myFetch(`http://localhost:9000/user/register`, "post", values).then(
+          responseJson => {
+            //对JSON的解析
+            if (responseJson.code === 200) {
+              console.log("responseJson", responseJson);
+              if (responseJson.data !== "" || responseJson.data !== null) {
+                message.success("login success!"); //成功信息
+                this.setState({
+                  isLoding: true
+                });
+                let responseDate = responseJson.data;
+                // console.log(responseDate.employeeId);
+                localStorage.setItem(
+                  "authorizationToken",
+                  responseDate.token
+                );
+                  localStorage.setItem("userInfo", JSON.stringify(responseDate));
+                localStorage.setItem("userId", responseDate.userId);
+                // console.log(responseDate);
+                let that = this;
+                setTimeout(function() {
+                  //延迟进入
+                  console.log(that.props);
+                  //页面跳转
+                  that.props.history.push({
+                    pathname: "/app",
+                    state: values
+                  });
+                }, 2000);
+              } else {
+                message.error("no response!");
+              }
+            } else if (
+              responseJson.message !== "" ||
+              responseJson.message !== null
+            ) {
+              message.error("register failed!");
             }
-            //请求体为JSON
-            response
-              .json()
-              .then(responseJson => {
-                //对JSON的解析
-                if (responseJson.code === 200) {
-                  console.log("responseJson", responseJson);
-                  if (responseJson.data !== "" || responseJson.data !== null) {
-                    message.success("login success!"); //成功信息
-                    this.setState({
-                      isLoding: true
-                    });
-                    let responseDate = responseJson.data;
-                    // console.log(responseDate.employeeId);
-                    localStorage.setItem("token", responseDate.token);
-                    localStorage.setItem(
-                      "userInfo",
-                      JSON.stringify(responseDate)
-                    );
-                    // console.log(responseDate);
-                    let that = this;
-                    setTimeout(function() {
-                      //延迟进入
-                      console.log(that.props);
-                      //页面跳转
-                      that.props.history.push({
-                        pathname: "/app",
-                        state: values
-                      });
-                    }, 2000);
-                  } else {
-                    message.error("no response!");
-                  }
-                } else if (
-                  responseJson.message !== "" ||
-                  responseJson.message !== null
-                ) {
-                  message.error(responseJson.message);
-                }
-              })
-              .catch(error => {
-                message.error("login failed!");
-              });
-          })
-          .catch(error => {
-            message.error("login failed!");
-          });
+          },
+          error => {
+            message.error("register failed!");
+          }
+        );
       }
     });
   };
@@ -178,7 +151,6 @@ class NormalRegisterForm extends Component {
             }}
           >
             <FormItem label="用户名">
-              
               {getFieldDecorator("userName", {
                 rules: [
                   {
@@ -201,7 +173,6 @@ class NormalRegisterForm extends Component {
               )}
             </FormItem>
             <Form.Item label="密码" hasFeedback>
-              
               {getFieldDecorator("password", {
                 rules: [
                   {
@@ -215,7 +186,6 @@ class NormalRegisterForm extends Component {
               })(<Input.Password />)}
             </Form.Item>
             <Form.Item label="确认密码" hasFeedback>
-              
               {getFieldDecorator("confirm", {
                 rules: [
                   {
@@ -229,7 +199,6 @@ class NormalRegisterForm extends Component {
               })(<Input.Password onBlur={this.handleConfirmBlur} />)}
             </Form.Item>
             <Form.Item label="E-mail">
-              
               {getFieldDecorator("email", {
                 rules: [
                   {
@@ -244,7 +213,6 @@ class NormalRegisterForm extends Component {
               })(<Input />)}
             </Form.Item>
             <Form.Item label="性别">
-              
               {getFieldDecorator("gender", {
                 rules: [
                   {
@@ -259,7 +227,6 @@ class NormalRegisterForm extends Component {
               )}
             </Form.Item>
             <Form.Item label="身份证号">
-              
               {getFieldDecorator("idCard", {
                 rules: [
                   {
@@ -273,7 +240,6 @@ class NormalRegisterForm extends Component {
               })(<Input />)}
             </Form.Item>
             <Form.Item label="用户类别">
-              
               {getFieldDecorator("userType", {
                 rules: [
                   {
@@ -294,7 +260,6 @@ class NormalRegisterForm extends Component {
                 marginBottom: "0"
               }}
             >
-              
               {/*<a className="login-form-forgot" href="" style={{float: 'right'}}>忘记密码?</a>*/}
               <Button
                 type="primary"

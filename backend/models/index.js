@@ -1,12 +1,19 @@
-var User = require("./user");
-var Conferees = require('./conferees');
-var ConferenceRoom = require("./conferenceRoom");
-var ConferenceRoomReserveLog = require('./conferenceRoomReserveLog');
-var PunchingCardLog = require('./punchingCardLog');
+var db = require('./db');
+var User = require("./user").User;
+var Conferee = require('./conferee').Conferee;
+var ConferenceRoom = require("./conferenceRoom").ConferenceRoom;
+var ConferenceRoomReserveLog = require('./conferenceRoomReserveLog').ConferenceRoomReserveLog;
+var PunchingCardLog = require('./punchingCardLog').PunchingCardLog;
+
+
+// ConferenceRoom.hasMany(ConferenceRoomReserveLog, {foreignKey: 'conferenceRoomId', sourceKey: 'id'});
+// ConferenceRoom.hasMany(Conferees, {foreignKey: 'conferenceRoomId', sourceKey: 'id'});
+
+// db.sync();
 
 module.exports={
   User,
-  Conferees,
+  Conferee,
   ConferenceRoom,
   ConferenceRoomReserveLog,
   PunchingCardLog,

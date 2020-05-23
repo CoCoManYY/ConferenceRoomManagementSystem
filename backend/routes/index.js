@@ -1,6 +1,8 @@
 var express = require('express');
 var users = require('../controller/users');
 var conferenceRooms = require('../controller/conferenceRooms');
+var conferees = require('../controller/conferees');
+var conferenceRoomReserveLogs = require('../controller/conferenceRoomReserveLogs');
 var checkToken = require('../controller/util').checkToken;
 var router = express.Router();
 
@@ -21,16 +23,26 @@ function authorization(req, res, next) {
 
 /* GET home page. */
 router.get('/user/login',users.login);
-router.get('/conferenceRoom/getAllConferenceRoomInfo', authorization, conferenceRooms.getAllConferenceRoomInfo);
 router.get('/conferenceRoom/getConferenceRoomDetail', authorization,conferenceRooms.getConferenceRoomDetail);
-router.get('/conferenceRoom/getCurrentConferenceRoomsInfo', authorization,conferenceRooms.getCurrentConferenceRoomsInfo);
-router.get('/conferenceRoom/getConferenceRoomsInfo',conferenceRooms.getConferenceRoomsInfo);
-router.post('/conferenceRoom/addConferenceRoomReserveLog', authorization,conferenceRooms.addConferenceRoomReserveLog);
+router.get('/conferenceRoom/getConferenceRoomsInfo',authorization,conferenceRooms.getConferenceRoomsInfo);
+router.get('/conferenceRoom/searchConferenceRoomsInfo',conferenceRooms.searchConferenceRoomsInfo);
+router.get('/conferenceRoom/getConferenceReservedByMyself',conferenceRooms.getConferenceReservedByMyself);
+router.get('/conferenceRoom/getConferenceRelatedToMyself',conferenceRooms.getConferenceRelatedToMyself);
+router.get('/conferenceRoom/getConferenceReserveLogDetail',conferenceRooms.getConferenceReserveLogDetail);
+router.post('/conferenceRoom/addConferenceRoomReserveLog',conferenceRooms.addConferenceRoomReserveLog);
+
 router.post('/user/login',users.login);
 router.post('/user/register',users.register);
 router.get('/user/getUserInfo',authorization,users.getUserInfo);
+router.get('/user/findAllUsersWithoutMyself',users.findAllUsersWithoutMyself);
+router.get('/user/searchUserInfo',users.searchUserInfo);
 router.post('/user/modifyPassword',authorization,users.modifyPassword);
 
+router.post('/conferee/changeConfereeStatus',conferees.changeConfereeStatus);
+router.post('/conferee/addConferees',conferees.addConferees);
+
+
+router.post('/conferenceRoomReserveLog/cancelConferenceRoomReserve',conferenceRoomReserveLogs.cancelConferenceRoomReserve);
 
 router.get('/', function (req, res) {
   res.send('Got a POST request')

@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import "../../style/login.less";
+import {myFetch} from '../../utils/networks';
 import { Form, Icon, Input, Button, Checkbox, message, Spin } from "antd";
 
 const FormItem = Form.Item;
@@ -18,74 +19,46 @@ class NormalLoginForm extends Component {
 
         //请求URL
         // const apiUrl = `/scb_sms-0.0.1-SNAPSHOT/sm/account/accountLogin`;
-        const apiUrl = `http://localhost:9000/user/login`;
-
-        //设置请求方式，请求头和请求内容
-        var opts = {
-          // credentials: "include",
-          method: "POST",
-          body: JSON.stringify(values),
-          headers: {
-            "Content-Type": "application/json"
-          }
-        };
-
-        //成功发送请求
-        fetch(apiUrl, opts)
-          .then(response => {
-            //请求没有正确响应
-            if (response.status !== 200) {
-              throw new Error(
-                "Fail to get response with status " + response.status
-              );
-            }
-            //请求体为JSON
-            response
-              .json()
-              .then(responseJson => {
-                //对JSON的解析
-                if (responseJson.code === 200) {
-                  console.log("responseJson", responseJson);
-                  if (responseJson.data !== "" || responseJson.data !== null) {
-                    message.success("login success!"); //成功信息
-                    this.setState({
-                      isLoding: true
-                    });
-                    let responseDate = responseJson.data;
-                    // console.log(responseDate.employeeId);
-                    localStorage.setItem(
-                      "authorizationToken",
-                      responseDate.token
-                    );
-                    localStorage.setItem("userId", responseDate.userId);
-                    // console.log(responseDate);
-                    let that = this;
-                    setTimeout(function() {
-                      //延迟进入
-                      console.log(that.props);
-                      //页面跳转
-                      that.props.history.push({
-                        pathname: "/app",
-                        state: values
-                      });
-                    }, 2000);
-                  } else {
-                    message.error("no response!");
-                  }
-                } else if (
-                  responseJson.message !== "" ||
-                  responseJson.message !== null
-                ) {
-                  message.error(responseJson.message);
-                }
-              })
-              .catch(error => {
-                message.error("login failed!");
+        myFetch(`http://localhost:9000/user/login`,'post',values).then(responseJson => {
+          //对JSON的解析
+          if (responseJson.code === 200) {
+            console.log("responseJson", responseJson);
+            if (responseJson.data !== "" || responseJson.data !== null) {
+              message.success("login success!"); //成功信息
+              this.setState({
+                isLoding: true
               });
-          })
-          .catch(error => {
-            message.error("login failed!");
-          });
+              let responseDate = responseJson.data;
+              // console.log(responseDate.employeeId);
+              localStorage.setItem(
+                "authorizationToken",
+                responseDate.token
+              );
+                localStorage.setItem("userInfo", JSON.stringify(responseDate));
+              localStorage.setItem("userId", responseDate.userId);
+              // console.log(responseDate);
+              let that = this;
+              setTimeout(function() {
+                //延迟进入
+                console.log(that.props);
+                //页面跳转
+                that.props.history.push({
+                  pathname: "/app",
+                  state: values
+                });
+              }, 2000);
+            } else {
+              message.error("no response!");
+            }
+          } else if (
+            responseJson.message !== "" ||
+            responseJson.message !== null
+          ) {
+            message.error('登陆失败');
+          }
+        },error => {
+          message.error("login failed!");
+        })
       }
     });
   };

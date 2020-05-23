@@ -5,23 +5,15 @@ import '../../style/index.less';
 
 import SiderCustom from './SiderCustom';
 import HeaderCustom from './HeaderCustom';
-import {canReserveStatusMap} from '../../constant/conferenceRooms';
+import {canReserveStatusMap} from '../../constant/allKindsOfMap';
 import MIndex from '../index/Index';
 // import Echarts from '../chart/echarts/Echarts';
 import CurrentConferenceRoomsInfo from '../form/CurrentConferenceRoomsInfo';
 import CurrentConferenceRoomsDetail from '../form/CurrentConferenceRoomsDetail';
 import CurrentConferenceRoomsReserve from '../form/CurrentConferenceRoomsReserve';
+import PersonalConferenceList from '../form/PersonalConferenceList';
+import ConferenceRoomReserveLogDetail from '../form/ConferenceRoomReserveLogDetail';
 import PersonalCenter from '../form/PersonalCenter';
-
-import AForm from '../form/AForm/AForm';
-import DForm from '../form/DForm/DForm';
-import EForm from '../form/EForm/EForm';
-import PForm from '../form/PForm/PForm';
-import RForm from '../form/RForm/RForm';
-import PersonMsg from '../form/Person/PersonMsg';
-import MeeManagement from '../meeting/Meeting';
-import my from '../calendars/Calendar';
-// import NtiCalendars from '../header/Calendars';
 import noMatch from './404';
 
 const {Content, Footer} = Layout;
@@ -45,6 +37,7 @@ export default class App extends Component {
         });
     };
     componentDidMount() {
+        console.log('testtestprops',this.props);
         //save Sider
         if (localStorage.getItem("mms_SiderCollapsed") === null) {
             localStorage.setItem("mms_SiderCollapsed", false);
@@ -73,22 +66,14 @@ export default class App extends Component {
                 <SiderCustom collapsed={collapsed} path={location.pathname}/>
                 <Layout>
                     <HeaderCustom collapsed={collapsed} toggle={this.toggle} username={userName}/>
-                    <Content style={{margin: '0 16px'}}>
+                    <Content style={{margin: '16px',height:'100%'}}>
                     <Switch>
                         <Route exact path={'/app'} component={CurrentConferenceRoomsInfo} />
                         <Route exact path={'/app/detail'} component={CurrentConferenceRoomsDetail} />
                         <Route exact path={'/app/detail/reserve'} component={CurrentConferenceRoomsReserve}/>
                         <Route exact path={'/app/personalCenter'} component={PersonalCenter}/>
-                        <Route exact path={'/app/account'} component={AForm} />
-                        <Route exact path={'/app/department'} component={DForm} />
-                        <Route exact path={'/app/employee'} component={EForm} />
-                        <Route exact path={'/app/position'} component={PForm} />
-                        <Route exact path={'/app/role'} component={PForm} />
-                        <Route exact path={'/app/meeting'} component={MeeManagement} />
-                        <Route exact path={'/app/personalInformation'} component={PersonMsg} />
-                        <Route exact path={'/app/meetingSchedule'} component={MeeManagement} />
-                        <Route exact path={'/app/calendar'} component={my} />
-
+                        <Route exact path={'/app/personalConferenceList'} component={PersonalConferenceList} />
+                        <Route exact path={'/app/conferenceRoomReserveLogDetail'} component={ConferenceRoomReserveLogDetail} />
                         <Route component={noMatch} />
                     </Switch>
                     </Content>

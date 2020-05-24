@@ -5,9 +5,12 @@ var moment = require("moment");
 var Until = require('./util') //同级目录下
 var Conferee = require('../models/conferee').Conferee;
 var User = require('../models/user').User;
+var UserModel = require('../models/user');
 var ConferenceRoom = require('../models/conferenceRoom').ConferenceRoom;
+var ConferenceRoomModel = require('../models/conferenceRoom');
 var ConferenceRoomReserveLog = require('../models/conferenceRoomReserveLog').ConferenceRoomReserveLog;
 var ConferenceRoomReserveLogModel = require('../models/conferenceRoomReserveLog');
+var sendEmail = require('./util').sendEmail;
 const Op = Sequelize.Op;
 
 const ConferenceRoomReserveLogAssociationWithUser = ConferenceRoomReserveLog.belongsTo(User, {
@@ -28,7 +31,11 @@ module.exports = {
                     foreignKey: 'conferenceRoomId',
                     sourceKey: 'id'
                 }),
-                where:{status:{[Op.ne]:1}},
+                where: {
+                    status: {
+                        [Op.ne]: 1
+                    }
+                },
                 required: false
             }]
         }).then((data) => {
@@ -143,7 +150,7 @@ module.exports = {
             ],
             where: {
                 startTime: {
-                    [Op.gt]: moment.utc().valueOf(),
+                    // [Op.gt]: moment.utc().valueOf(),
                     [Op.lt]: moment.utc().add('days', 7).valueOf()
                 },
                 endTime: {
@@ -187,7 +194,7 @@ module.exports = {
                 }),
                 where: {
                     startTime: {
-                        [Op.gt]: moment.utc().valueOf(),
+                        // [Op.gt]: moment.utc().valueOf(),
                         [Op.lt]: moment.utc().add('days', 7).valueOf()
                     },
                     endTime: {
@@ -315,48 +322,43 @@ module.exports = {
         });
     },
     addConferenceRoomReserveLog: function (req, res, next) {
-        console.log('params', req.body);
         var description = req.body.description;
         var startTime = req.body.startTime;
         var endTime = req.body.endTime;
         var conferenceRoomId = req.body.conferenceRoomId;
         var userId = req.body.userId;
-        const conferees =  req.body.conferees;
-        ConferenceRoomReserveLogModel.addConferenceRoomReserveLog(startTime, endTime, conferenceRoomId,description,userId).then(data => {
+        const conferees = req.body.conferees;
+        ConferenceRoomReserveLogModel.addConferenceRoomReserveLog(startTime, endTime, conferenceRoomId, description, userId).then(data => {
             if (data) {
-                const confereesParams=conferees.map(conferee=>{
+                const confereeEmailList = [];
+                const confereesParams = (conferees || []).map(conferee => {
                     const result = {};
-                    result.userId=JSON.parse(conferee).id;
-                    result.conferenceRoomId=parseInt(conferenceRoomId);
+                    result.userId = JSON.parse(conferee).id;
+                    result.conferenceRoomId = parseInt(conferenceRoomId);
                     result.conferenceRoomReserveLogId = parseInt(data.id);
+                    confereeEmailList.push(JSON.parse(conferee).email);
                     return result;
                 });
-                Conferee.bulkCreate(confereesParams).then(data=>{
-                    if(data){
-                        res.json({
-                            success: true,
-                            data: {
-                                conferenceRoomReserveLogId: data.id
-                            },
-                            code: 200,
-                            msg: '预定成功'
+                Conferee.bulkCreate(confereesParams).then(data => {
+                    if (data) {
+                        const promiseList = [];
+                        promiseList.push(UserModel.findByUserId(userId));
+                        promiseList.push(ConferenceRoomModel.findByConferenceRoomId(conferenceRoomId));
+                        Promise.all(promiseList).then(data => {
+                            const user = data[0];
+                            const conferenceRoom = data[1];
+                            sendEmail(confereeEmailList, startTime, endTime, conferenceRoom.houseNumber, description, user.username)
+                        })
+
+                        res.json({success: true,data: {conferenceRoomReserveLogId: data},code: 200,msg: '预定成功'
                         });
-                    }else{
-                        res.json({
-                            success: false,
-                            data: data,
-                            code: 500,
-                            mag: '预定失败'
+                    } else {
+                        res.json({success: false,data: data,code: 500,msg: '预定失败'
                         });
                     }
-                })  
+                })
             } else {
-                res.json({
-                    success: false,
-                    data: data,
-                    code: 500,
-                    mag: '预定失败'
-                });
+                res.json({success: false,data: data,code: 500, msg: '预定失败'});
             }
         });
     }

@@ -43,7 +43,8 @@ router.post('/conferee/addConferees',conferees.addConferees);
 
 
 router.post('/conferenceRoomReserveLog/cancelConferenceRoomReserve',conferenceRoomReserveLogs.cancelConferenceRoomReserve);
-
+router.post('/conferenceRoomReserveLog/clockInConferenceRoomReserve',conferenceRoomReserveLogs.clockInConferenceRoomReserve);
+router.post('/conferenceRoomReserveLog/raceConferenceRoomReserve',conferenceRoomReserveLogs.raceConferenceRoomReserve);
 router.get('/', function (req, res) {
   res.send('Got a POST request')
 })

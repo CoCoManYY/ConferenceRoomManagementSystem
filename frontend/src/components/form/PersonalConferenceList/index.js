@@ -78,6 +78,7 @@ class PersonalConferenceList extends Component {
               </a>
             );
             if (record.type == 1) {
+              console.log("testrecord", record);
               return (
                 <span>
                   {viewDetail}
@@ -89,6 +90,19 @@ class PersonalConferenceList extends Component {
                   >
                     取消预订
                   </a>
+                  <Divider type="vertical" />
+                  { moment().isBefore(moment(record.endTime)) &&
+                    moment().isAfter(moment(record.startTime)) && (record.status != 2 ?
+                      <a
+                        onClick={() => {
+                          this.clockInReserve(
+                            record.conferenceRoomReserveLogId
+                          );
+                        }}
+                      >
+                        打卡
+                      </a>:<span>已打卡</span>
+                    )}
                 </span>
               );
             } else if (record.type == 2) {
@@ -146,7 +160,26 @@ class PersonalConferenceList extends Component {
     this.setState({ tabsActiveKey: activeKey, current: 1 });
     this.initData(activeKey, this.state.current - 1);
   };
-
+  clockInReserve = conferenceRoomReserveLogId => {
+    myFetch(
+      "http://localhost:9000/conferenceRoomReserveLog/clockInConferenceRoomReserve",
+      "post",
+      { conferenceRoomReserveLogId }
+    ).then(
+      responseJson => {
+        //对JSON的解析
+        if (responseJson.code === 200) {
+          message.success(responseJson.msg);
+          this.initData(this.state.tabsActiveKey, 0);
+        } else {
+          message.error(responseJson.msg);
+        }
+      },
+      err => {
+        message.error("会议打卡失败");
+      }
+    );
+  };
   cancelReserve = conferenceRoomReserveLogId => {
     myFetch(
       "http://localhost:9000/conferenceRoomReserveLog/cancelConferenceRoomReserve",

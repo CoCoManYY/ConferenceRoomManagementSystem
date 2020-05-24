@@ -1,31 +1,8 @@
-var jwt = require("jwt-simple"); //引入jwt模块
 const nodemailer = require('nodemailer');
 const moment = require('moment');
-const getEmailHtml = require('../constant/email').getEmailHtml;
-var findUserByNameAndPassword = require('../models/user').findByNameAndPassword;
-const salt = "cocoman";
+const getEmailHtml = require('./constant/email').getEmailHtml;
 
-const setResult= (code, message = "success", data = null) => {
-	return {
-		code: code,
-		message: message,
-		data: data,
-	};
-}
-
-
-const setToken= function (obj) {
-	//设置Token
-	return jwt.encode(obj, salt); //返回加密结果   jwt.encode('加密的对象','加密的秘钥')
-}
-
-const checkToken = function (token) {
-	var tokenObj = jwt.decode(token, salt); //token存在，进行解密
-	return tokenObj;
-}
-
-const sendEmail = (sendList, startTime, endTime, houseNumber, description, username) => {
-	console.log('sendEmailparams',sendList, startTime, endTime, houseNumber, description, username);
+exports.sendEmail = (sendList, startTime, endTime, houseNumber, description, username) => {
     let transporter = nodemailer.createTransport({
         // host: 'smtp.ethereal.email',
         service: 'qq', // 使用了内置传输发送邮件 查看支持列表：https://nodemailer.com/smtp/well-known/
@@ -55,12 +32,3 @@ const sendEmail = (sendList, startTime, endTime, houseNumber, description, usern
         // Message sent: <04ec7731-cc68-1ef6-303c-61b0f796b78f@qq.com>
     });
 }
-
-
-module.exports = {
-	setToken,
-	checkToken,
-	/* 接口统一返回格式 */
-	setResult,
-	sendEmail
-};

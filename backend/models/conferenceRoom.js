@@ -28,7 +28,12 @@ const ConferenceRoom = db.define("conferenceRoom", {
 });
 
 
-var conferenceRoom = ConferenceRoom.sync({ force: false });
-
+exports.findByConferenceRoomId = function (conferenceRoomId) {
+		return ConferenceRoom.findOne({
+			where: {
+				id: conferenceRoomId
+			}
+		});
+	},
 exports.ConferenceRoom=ConferenceRoom;
 

@@ -16,9 +16,6 @@ class NormalLoginForm extends Component {
       if (!err) {
         console.log("Received values of form: ", values);
         this.state.msg = values;
-
-        //请求URL
-        // const apiUrl = `/scb_sms-0.0.1-SNAPSHOT/sm/account/accountLogin`;
         myFetch(`http://localhost:9000/user/login`,'post',values).then(responseJson => {
           //对JSON的解析
           if (responseJson.code === 200) {
@@ -34,7 +31,7 @@ class NormalLoginForm extends Component {
                 "authorizationToken",
                 responseDate.token
               );
-                localStorage.setItem("userInfo", JSON.stringify(responseDate));
+              localStorage.setItem("userInfo", JSON.stringify(responseDate));
               localStorage.setItem("userId", responseDate.userId);
               // console.log(responseDate);
               let that = this;
@@ -96,13 +93,6 @@ class NormalLoginForm extends Component {
               )}
             </FormItem>
             <FormItem style={{ marginBottom: "0" }}>
-              {/* {getFieldDecorator('accountRemember', {
-                                    valuePropName: 'checked',
-                                    initialValue: true,
-                                })(
-                                    <Checkbox>remeber me</Checkbox>
-                                )} */}
-              {/*<a className="login-form-forgot" href="" style={{float: 'right'}}>忘记密码?</a>*/}
               <Button
                 type="primary"
                 htmlType="submit"
@@ -113,7 +103,6 @@ class NormalLoginForm extends Component {
               </Button>
             </FormItem>
           </Form>
-          {/*<a className="githubUrl" href="https://github.com/mooncoder1995"> </a>*/}
         </div>
       </div>
     );

@@ -63,5 +63,9 @@ exports.updateConferenceRoomReserveLogStatus = function (conferenceRoomReserveLo
 	return ConferenceRoomReserveLog.update({status:type}, {where:{ id: conferenceRoomReserveLogId}});
 },
 
+exports.raceConferenceRoomReserve = function (conferenceRoomReserveLogId, userId,description,type) {
+	return ConferenceRoomReserveLog.update({ userId,description,status:type}, {where:{ id: conferenceRoomReserveLogId}});
+},
+
 exports.ConferenceRoomReserveLog=ConferenceRoomReserveLog;
 

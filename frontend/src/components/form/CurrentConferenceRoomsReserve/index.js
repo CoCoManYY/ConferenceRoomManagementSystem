@@ -61,53 +61,66 @@ class Reserve extends Component {
       timelineData: {
         8: {
           time: "8:00-9:00",
+          id:null,
           status: 0
         },
         9: {
           time: "9:00-10:00",
+          id:null,
           status: 0
         },
         10: {
           time: "10:00-11:00",
+          id:null,
           status: 0
         },
         11: {
           time: "11:00-12:00",
+          id:null,
           status: 0
         },
         12: {
           time: "12:00-13:00",
+          id:null,
           status: 0
         },
         13: {
           time: "13:00-14:00",
+          id:null,
           status: 0
         },
         14: {
           time: "14:00-15:00",
+          id:null,
           status: 0
         },
         15: {
           time: "15:00-16:00",
+          id:null,
           status: 0
         },
         16: {
           time: "16:00-17:00",
+          id:null,
           status: 0
         },
         17: {
           time: "17:00-18:00",
+          id:null,
           status: 0
         }
       },
       visible: false,
       conferenceRoomDetail: {},
-      userList: []
+      userList: [],
+      currentReserveStatus:0,
+      currentConferenceRoomReserveLogId:1,
+      defaultStartTime: '12:00:00',
+      defaultEndTime:'12:00:00'
     };
     this.onSearchChange = debounce(this.onSearchChange, 800);
   }
-  reverseConferenceRoom = () => {
-    console.log("reverseConferenceRoom");
+  reverseConferenceRoom = (status=0,id,key) => {
     // 更新用户信息
     myFetch("http://localhost:9000/user/findAllUsersWithoutMyself", "get", {
       userId: localStorage.getItem("userId")
@@ -117,7 +130,11 @@ class Reserve extends Component {
         if (responseJson.code === 200) {
           this.setState({
             visible: true,
-            userList: responseJson.data
+            userList: responseJson.data,
+            currentReserveStatus:status,
+            currentConferenceRoomReserveLogId: id,
+            defaultStartTime:key+':00:00',
+            defaultEndTime:(parseInt(key)+1)+':00:00',
           });
         } else {
           message.error("获取用户信息失败");
@@ -152,15 +169,20 @@ class Reserve extends Component {
             const hour = startTime.hour();
             if (moment(startTime).isSame(moment(timestamp), "day")) {
               if (log.status == 2) { 
-                (timelineData[hour] || {}).status = 2;
+                (timelineData[hour] || {}).status = 2;              
+                (timelineData[hour] || {}).id = log.id;
               } else {
                 if (
                   moment().valueOf() - startTime.valueOf() >= 15 * 60 * 1000 &&
                   moment().valueOf() < endTime.valueOf()
+                  // &&
+                  // log.userId!=localStorage.getItem('userId')
                 ) {
                   (timelineData[hour] || {}).status = 1;
+                  (timelineData[hour] || {}).id = log.id;
                 } else {
                   (timelineData[hour] || {}).status = 3;
+                  (timelineData[hour] || {}).id = log.id;
                 }
               }
             }
@@ -172,7 +194,6 @@ class Reserve extends Component {
             }
           });
           this.setState({
-            //   calenderListData,
             conferenceRoomDetail: responseJson.data,
             timelineData
           });
@@ -210,7 +231,7 @@ class Reserve extends Component {
 
   disabledStartHoursHandle = () => {
     const disabledHours = [];
-    const canSelectHours = Object.keys(this.state.timelineData);
+    const canSelectHours = Object.keys(this.state.timelineData).filter(key=>this.state.timelineData[key].status==0||this.state.timelineData[key].status==1)
     for (let i = 0; i < 24; i++) {
       if (canSelectHours.some(hour => hour == i)) continue;
       disabledHours.push(i);
@@ -232,10 +253,10 @@ class Reserve extends Component {
 
   disabledEndHoursHandle = () => {
     const disabledHours = [];
-    const canSelectHours = Object.keys(this.state.timelineData);
+    const canSelectHours = Object.keys(this.state.timelineData).filter(key=>this.state.timelineData[key].status==0||this.state.timelineData[key].status==1)
     for (let i = 0; i < 24; i++) {
       if (canSelectHours.some(hour => hour == i)) continue;
-      disabledHours.push(i);
+      disabledHours.push(i+1);
     }
     return disabledHours;
   };
@@ -260,7 +281,14 @@ class Reserve extends Component {
       form.getFieldValue("startTime")
     );
     if (value.isAfter(form.getFieldValue("startTime"))) {
-      callback();
+      let startHour = form.getFieldValue("startTime").hour();
+      let endHour = value.hour();
+      let pass=true;
+      for(let i=startHour;i<endHour;i++){
+        if(this.state.timelineData[i].status!=0&&this.state.timelineData[i].status!=1) pass=false;
+      }
+      if(pass) callback();
+      else callback("该时间段中有不可预订时间段");
     } else {
       callback("结束时间必须大于开始时间");
     }
@@ -274,20 +302,42 @@ class Reserve extends Component {
     this.props.form.validateFields((err, values) => {
       if (!err) {
         console.log("Received values of form: ", values);
-        myFetch(
-          "http://localhost:9000/conferenceRoom/addConferenceRoomReserveLog",
-          "post",
-          {
-            ...values,
-            conferenceRoomId,
-            userId: localStorage.getItem("userId")
-          }
-        ).then(responseJson => {
-          if (responseJson.code == 200) {
-            this.initData();
-            message.success("预定成功");
-          }
-        });
+        if(this.state.currentReserveStatus==0){
+          myFetch(
+            "http://localhost:9000/conferenceRoom/addConferenceRoomReserveLog",
+            "post",
+            {
+              ...values,
+              conferenceRoomId,
+              userId: localStorage.getItem("userId")
+            }
+          ).then(responseJson => {
+            if (responseJson.code == 200) {
+              this.initData();
+              this.setState({visible: false});
+              message.success("预定成功");
+            }
+          });
+        }
+        if(this.state.currentReserveStatus==1){
+          myFetch(
+            "http://localhost:9000/conferenceRoomReserveLog/raceConferenceRoomReserve",
+            "post",
+            {
+              ...values,
+              conferenceRoomId,
+              conferenceRoomReserveLogId:this.state.currentConferenceRoomReserveLogId,
+              userId: localStorage.getItem("userId")
+            }
+          ).then(responseJson => {
+            if (responseJson.code == 200) {
+              this.initData();
+              this.setState({visible: false});
+              message.success("抢占成功");
+            }
+          });
+        }
+        
       }
     });
   };
@@ -308,7 +358,7 @@ class Reserve extends Component {
                   <p>
                     
                     {data.status == 0 || data.status == 1 ? (
-                      <a onClick={this.reverseConferenceRoom}>
+                      <a onClick={()=>this.reverseConferenceRoom(data.status,data.id,key)}>
                         
                         {canReserveStatusMap[data.status]}
                       </a>
@@ -385,7 +435,7 @@ class Reserve extends Component {
                     message: "Please select time!"
                   }
                 ],
-                initialValue: moment("12:00:00", "HH:mm:ss").date(moment(parseInt(getQueryString("timestamp"))).date())
+                initialValue: moment(this.state.defaultStartTime, "HH:mm:ss").date(moment(parseInt(getQueryString("timestamp"))).date())
               })(
                 <TimePicker
                   allowClear={false}
@@ -408,7 +458,7 @@ class Reserve extends Component {
                     validator: this.compareToStartTime
                   }
                 ],
-                initialValue: moment("12:00:00", "HH:mm:ss").date(moment(parseInt(getQueryString("timestamp"))).date())
+                initialValue: moment(this.state.defaultEndTime, "HH:mm:ss").date(moment(parseInt(getQueryString("timestamp"))).date())
               })(
                 <TimePicker
                   allowClear={false}

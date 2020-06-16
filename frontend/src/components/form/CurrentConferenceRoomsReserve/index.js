@@ -116,7 +116,8 @@ class Reserve extends Component {
       currentReserveStatus:0,
       currentConferenceRoomReserveLogId:1,
       defaultStartTime: '12:00:00',
-      defaultEndTime:'12:00:00'
+      defaultEndTime:'12:00:00',
+      shouldTimePickerDisabled: false
     };
     this.onSearchChange = debounce(this.onSearchChange, 800);
   }
@@ -135,8 +136,25 @@ class Reserve extends Component {
             currentConferenceRoomReserveLogId: id,
             defaultStartTime:key+':00:00',
             defaultEndTime:(parseInt(key)+1)+':00:00',
+            shouldTimePickerDisabled:false
           });
-        } else {
+          if(status==1){
+            myFetch(
+              "http://localhost:9000/conferenceRoom/getConferenceReserveLogDetail",
+              "get",
+              { conferenceRoomReserveLogId:id }
+            ).then(
+              responseJson => {
+                //对JSON的解析
+                if (responseJson.code === 200) {
+                  console.log("getDetail", responseJson.data);
+                  this.setState({  defaultStartTime:moment(responseJson.data.startTime).hour()+':00:00',
+                  defaultEndTime:moment(responseJson.data.endTime).hour()+':00:00' ,shouldTimePickerDisabled:true});
+                }
+              },
+              err=>{}
+          );
+        }} else {
           message.error("获取用户信息失败");
         }
       },
@@ -166,25 +184,30 @@ class Reserve extends Component {
           (responseJson.data.conferenceRoomReserveLogs || []).forEach(log => {
             const startTime = moment(log.startTime);
             const endTime = moment(log.endTime);
-            const hour = startTime.hour();
+            const startHour = startTime.hour();
+            const endHour = endTime.hour();
             if (moment(startTime).isSame(moment(timestamp), "day")) {
-              if (log.status == 2) { 
-                (timelineData[hour] || {}).status = 2;              
-                (timelineData[hour] || {}).id = log.id;
-              } else {
-                if (
-                  moment().valueOf() - startTime.valueOf() >= 15 * 60 * 1000 &&
-                  moment().valueOf() < endTime.valueOf()
-                  // &&
-                  // log.userId!=localStorage.getItem('userId')
-                ) {
-                  (timelineData[hour] || {}).status = 1;
-                  (timelineData[hour] || {}).id = log.id;
+              for(let i=startHour;i<endHour;i++){
+                if (log.status == 2) { 
+                  (timelineData[i] || {}).status = 2;              
+                  (timelineData[i] || {}).id = log.id;
                 } else {
-                  (timelineData[hour] || {}).status = 3;
-                  (timelineData[hour] || {}).id = log.id;
+                  if (
+                    moment().valueOf() - startTime.valueOf() >= 15 * 60 * 1000 &&
+                    moment().valueOf() < endTime.valueOf()
+                  ) {
+                    (timelineData[i] || {}).status = 1;
+                    (timelineData[i] || {}).id = log.id;
+                    if(log.userId==localStorage.getItem('userId')){
+                      (timelineData[i] || {}).status = 5;
+                    }
+                  } else {
+                    (timelineData[i] || {}).status = 3;
+                    (timelineData[i] || {}).id = log.id;
+                  }
                 }
               }
+              
             }
           });
           // 过期情况处理
@@ -356,10 +379,8 @@ class Reserve extends Component {
                 <Timeline.Item color={colorMap[data.status]}>
                   <p> {data.time} </p>
                   <p>
-                    
                     {data.status == 0 || data.status == 1 ? (
                       <a onClick={()=>this.reverseConferenceRoom(data.status,data.id,key)}>
-                        
                         {canReserveStatusMap[data.status]}
                       </a>
                     ) : (
@@ -395,6 +416,10 @@ class Reserve extends Component {
             <Descriptions.Item label="是否支持远程会议">
               
               {this.state.conferenceRoomDetail.supportRemote ? "是" : "否"}
+            </Descriptions.Item>
+            <Descriptions.Item label="日期">
+              
+              {moment(parseInt(getQueryString("timestamp"))).format('YYYY.MM.DD')}
             </Descriptions.Item>
           </Descriptions>
           <Divider type="horizontal" />
@@ -439,6 +464,7 @@ class Reserve extends Component {
               })(
                 <TimePicker
                   allowClear={false}
+                  disabled ={this.state.shouldTimePickerDisabled}
                   disabledHours={this.disabledStartHoursHandle}
                   disabledMinutes={this.disabledStartMinutesHandle}
                   disabledSeconds={this.disabledStartSecondsHandle}
@@ -461,6 +487,7 @@ class Reserve extends Component {
                 initialValue: moment(this.state.defaultEndTime, "HH:mm:ss").date(moment(parseInt(getQueryString("timestamp"))).date())
               })(
                 <TimePicker
+                  disabled ={this.state.shouldTimePickerDisabled}
                   allowClear={false}
                   disabledHours={this.disabledEndHoursHandle}
                   disabledMinutes={this.disabledEndMinutesHandle}

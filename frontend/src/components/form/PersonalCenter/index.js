@@ -103,6 +103,10 @@ compareToFirstPassword = (rule, value, callback) => {
                 console.log('modifyPassword',responseJson.data);
                 message.success(responseJson.msg);
                 this.setState({drawerVisible:false});
+                localStorage.removeItem("authorizationToken");
+                localStorage.removeItem("userId");
+                localStorage.removeItem("userInfo");
+                history.push('/login');
             } else{
               message.error(responseJson.msg);
             }
@@ -110,48 +114,7 @@ compareToFirstPassword = (rule, value, callback) => {
           message.error("密码修改失败");
       }
         )
-         //请求URL
-      //   // const apiUrl = `/scb_sms-0.0.1-SNAPSHOT/sm/account/accountLogin`;
       
-      //   const apiUrl = `http://localhost:9000/user/modifyPassword`;
-
-      //   //设置请求方式，请求头和请求内容
-      //   var opts = {
-      //       // credentials: "include",
-      //       method: "post",
-      //       body: JSON.stringify({...values, userId:localStorage.getItem("userId")}),
-      //       headers: {
-      //           'Content-Type': 'application/json',
-      //           'Authorization': localStorage.getItem('authorizationToken')
-      //       }
-      //   }
-
-      //   //成功发送请求
-      //   fetch(apiUrl, opts).then((response) => {
-      //       //请求没有正确响应
-      //       if (response.status !== 200) {
-      //           if(response.status === 401){
-      //               history.push('/login');
-      //           }
-      //           throw new Error('Fail to get response with status ' + response.status);
-      //       }
-      //       //请求体为JSON
-      //       response.json().then((responseJson) => {
-      //           //对JSON的解析
-      //           if (responseJson.code === 200) {
-      //               const conferenceRoomsInfo = [];
-      //               console.log('modifyPassword',responseJson.data);
-      //               message.success(responseJson.msg);
-      //               this.setState({drawerVisible:false});
-      //           } else{
-      //             message.error(responseJson.msg);
-      //           }
-      //       }).catch((error) => {
-      //           message.error("获取会议室信息失败");
-      //       });
-      //   }).catch((error) => {
-      //       message.error("获取会议室信息失败");
-      //   });
       }
     })
   };

@@ -11,14 +11,6 @@ const PunchingCardLogs = db.define("punchingCardLogs", {
 	conferenceRoomReserveLogsId: {
 		type: Sequelize.INTEGER(11),
 		allowNull: false,
-	},
-	conferenceRoomId: {
-		type: Sequelize.INTEGER(11),
-		allowNull: false,
-	},
-	createTime: {
-		type: Sequelize.DATE(),
-		allowNull: false,
 	}
 });
 
@@ -33,6 +25,8 @@ exports.queryAllPunchingCardLogs = function () {
 	return PunchingCardLogs.findAll();
 };
 
+
+
 // 通过id查找打卡记录
 exports.queryPunchingCardLogsById = function (id) {
 	return PunchingCardLogs.findOne({
@@ -41,5 +35,15 @@ exports.queryPunchingCardLogsById = function (id) {
 		}
 	});
 };
+
+
+// 添加打卡记录
+exports.addPunchingCardLog = function (conferenceRoomReserveLogsId) {
+	console.log('addPunchingCardLog', conferenceRoomReserveLogsId);
+	// 向 user 表中插入数据
+	return PunchingCardLogs.create({
+		conferenceRoomReserveLogsId
+	});
+},
 
 exports.PunchingCardLogs = PunchingCardLogs;

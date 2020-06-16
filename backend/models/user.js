@@ -102,6 +102,17 @@ module.exports = {
 			}
 		});
 	},
+// 通过用户id查找用户
+findByIdCard: function (idCard) {
+	return User.findOne({
+		where: {
+			idcard: idCard
+		},
+		attributes: {
+			exclude: ['password']
+		}
+	});
+},
 
 	// 通过用户id查找用户
 	findPasswordByUserId: function (userId) {

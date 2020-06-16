@@ -72,22 +72,12 @@ export default class my extends Component {
   getListData = value => {
     let month = value.month();
     let day = value.date();
-    // let b = 4;
-    // let a = 8;
-    // let c = 12;
     let listData;
-    // console.log("getListDatamth", month, day, this.state.calenderListData);
     Object.keys(this.state.calenderListData || {}).forEach(mth => {
-      // console.log("month", mth);
       if (mth == month) {
         Object.keys(this.state.calenderListData[mth] || {}).forEach(
           innerDay => {
-            // console.log("day", innerDay);
             if (day == innerDay) {
-              // console.log(
-              //   "this.state.calenderListData[month][day]",
-              //   this.state.calenderListData[month][day]
-              // );
               listData = this.state.calenderListData[month][day];
             }
           }
@@ -111,12 +101,7 @@ export default class my extends Component {
   };
 
   disabledDate = value => {
-    return !(
-      value.year() == moment().year() &&
-      value.month() == moment().month() &&
-      value.date() >= moment().date() &&
-      value.date() < moment().date() + 7
-    );
+    return !(value.isSame(moment(),'day')||(value.isAfter(moment(),'day')&&value.isBefore(moment().add(7, 'days'),'day')));
   };
   selectHandle = val => {
     console.log("selectHandle", val.valueOf());

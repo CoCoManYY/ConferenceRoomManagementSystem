@@ -60,13 +60,19 @@ module.exports = {
         var idCard = req.body.idCard;
         var userType = req.body.userType;
         token = setToken({userName:username,password});
-        userModel.addUser(username,password,email,gender,idCard,userType).then(data=>{
-            if(data){
-                res.json({success:true,data:{token,userName:username,userId:data.id},code:200,msg:'注册成功'});
+        userModel.findByIdCard(idCard).then(user=>{
+            if(user){
+                res.json({success:false,data:user,code:500,msg:'该用户已被注册过，请直接登录'});
             }else{
-                res.json({success:false,data:data,code:500,msg:'注册失败'});
+                userModel.addUser(username,password,email,gender,idCard,userType).then(data=>{
+                    if(data){
+                        res.json({success:true,data:{token,userName:username,userId:data.id},code:200,msg:'注册成功'});
+                    }else{
+                        res.json({success:false,data:data,code:500,msg:'注册失败'});
+                    }
+                });
             }
-        });
+        })
     },
     getUserInfo:function(req, res, next) {
         console.log('params',req.query);

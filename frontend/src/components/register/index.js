@@ -116,17 +116,17 @@ class NormalRegisterForm extends Component {
                   });
                 }, 2000);
               } else {
-                message.error("no response!");
+                message.error(responseJson.msg);
               }
             } else if (
               responseJson.message !== "" ||
               responseJson.message !== null
             ) {
-              message.error("register failed!");
+              message.error(responseJson.msg);
             }
           },
           error => {
-            message.error("register failed!");
+            message.error('注册失败');
           }
         );
       }
@@ -231,7 +231,7 @@ class NormalRegisterForm extends Component {
                 rules: [
                   {
                     required: true,
-                    message: "Please input your password!"
+                    message: "请输入正确的身份证号"
                   },
                   {
                     validator: this.validateIdCard
@@ -282,3 +282,4 @@ class NormalRegisterForm extends Component {
 
 const Register = Form.create()(NormalRegisterForm);
 export default Register;
+ 

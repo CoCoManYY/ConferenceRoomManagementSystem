@@ -59,7 +59,7 @@ export default class App extends Component {
                 </div>
             <Row gutter={8}>
             {
-                this.state.conferenceRooms.map(room=>( 
+                 (this.state.conferenceRooms||[]).length?this.state.conferenceRooms.map(room=>( 
                     <Col className="gutter-row" span={6}>
                         <Card 
                             title={room.houseNumber} 
@@ -72,11 +72,11 @@ export default class App extends Component {
                             <p>{room.supportRemote?'可':'不可'}远程连线</p>
                         </Card>
                     </Col>)
-                )
+                ): <div style={{textAlign:'center'}}>无数据</div>
             }
             </Row>
-            <div style={{overflow:'hidden'}}>
-            <Pagination style={{ width: '300px', float: 'right'}} simple defaultCurrent={this.state.current} pageSize={this.state.pageSize} total={this.state.total} onChange={this.onPaginationChange}/>
+            <div style={{overflow:'hidden',padding: '1%',position: 'fixed',right: '2%',bottom: '10%'}}>
+            <Pagination simple defaultCurrent={this.state.current} pageSize={this.state.pageSize} total={this.state.total} onChange={this.onPaginationChange}/>
             </div>
             
             </div>

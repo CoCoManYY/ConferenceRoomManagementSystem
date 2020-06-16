@@ -30,6 +30,7 @@ export default class HeaderCustom extends Component{
     logout(){
         localStorage.removeItem("authorizationToken");
         localStorage.removeItem("userId");
+        localStorage.removeItem("userInfo");
         history.push('/login');
     }
     render(){

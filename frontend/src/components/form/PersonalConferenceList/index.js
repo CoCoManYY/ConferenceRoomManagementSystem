@@ -83,16 +83,10 @@ class PersonalConferenceList extends Component {
                 <span>
                   {viewDetail}
                   <Divider type="vertical" />
-                  <a
-                    onClick={() => {
-                      this.cancelReserve(record.conferenceRoomReserveLogId);
-                    }}
-                  >
-                    取消预订
-                  </a>
-                  <Divider type="vertical" />
+                  
+                  {/* <Divider type="vertical" /> */}
                   { moment().isBefore(moment(record.endTime)) &&
-                    moment().isAfter(moment(record.startTime)) && (record.status != 2 ?
+                    moment().isAfter(moment(record.startTime))?(record.status != 2 ?
                       <a
                         onClick={() => {
                           this.clockInReserve(
@@ -102,7 +96,15 @@ class PersonalConferenceList extends Component {
                       >
                         打卡
                       </a>:<span>已打卡</span>
-                    )}
+                    ):<a
+                    onClick={() => {
+                      this.cancelReserve(
+                        record.conferenceRoomReserveLogId
+                      );
+                    }}
+                  >
+                    取消预订
+                  </a>}
                 </span>
               );
             } else if (record.type == 2) {

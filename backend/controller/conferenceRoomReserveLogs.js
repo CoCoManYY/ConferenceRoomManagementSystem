@@ -9,6 +9,8 @@ var User = require('../models/user').User;
 var ConferenceRoom = require('../models/conferenceRoom').ConferenceRoom;
 var ConferenceRoomReserveLog = require('../models/conferenceRoomReserveLog').ConferenceRoomReserveLog;
 var ConferenceRoomReserveLogModel = require('../models/conferenceRoomReserveLog');
+var  PunchingCardLogModel =  require('../models/punchingCardLog');
+
 const Op = Sequelize.Op;
 
 module.exports = {
@@ -36,18 +38,27 @@ module.exports = {
         const conferenceRoomReserveLogId = req.body.conferenceRoomReserveLogId;
         ConferenceRoomReserveLogModel.updateConferenceRoomReserveLogStatus(conferenceRoomReserveLogId, 2).then(data => {
             if (data) {
+                PunchingCardLogModel.addPunchingCardLog(conferenceRoomReserveLogId).then(result=>{
+                    res.json({
+                        success: true,
+                        data: {},
+                        code: 200,
+                        msg: '会议打卡成功'
+                    });
+                },err=>
                 res.json({
-                    success: true,
+                    success: false,
                     data: {},
-                    code: 200,
-                    msg: '会议打卡成功'
-                });
+                    code: 500,
+                    msg: '会议打卡失败'
+                }))
+               
             } else {
                 res.json({
                     success: false,
                     data: {},
                     code: 500,
-                    msg: '会议打卡成功'
+                    msg: '会议打卡失败'
                 });
             }
         })

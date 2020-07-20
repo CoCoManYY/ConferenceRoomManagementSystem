@@ -51,7 +51,7 @@
     "hoek": "^5.0.4",
     "html-webpack-plugin": "2.29.0",
     "jest": "20.0.4",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.19",
     "mockjs": "^1.0.1-beta3",
     "moment": "^2.25.3",
     "mongodb": "^2.2.33",
